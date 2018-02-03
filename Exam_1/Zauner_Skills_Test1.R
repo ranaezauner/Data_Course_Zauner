@@ -85,6 +85,9 @@ levels(DNA$Year_Collected)
 Ben_Mean_Year <- data.frame(tapply(X=DNA$DNA_Concentration_Ben, INDEX=list(DNA$Year_Collected), FUN=mean , na.rm = TRUE))
 max(Ben_Mean_Year)
 
+write.csv(Ben_Mean_Year, file ="C:/users/ranae/desktop/Data_course_Zauner/Exam_1/Bens_Means.csv")
+
+?write.csv
 
 #VI.
 #Upload the following to your github web page:
