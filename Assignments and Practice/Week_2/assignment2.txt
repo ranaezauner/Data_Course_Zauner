@@ -1,0 +1,208 @@
+Ranae@Ranae-laptop MINGW64 ~
+$ pwd
+/c/Users/Ranae
+
+Ranae@Ranae-laptop MINGW64 ~
+$ cd
+
+Ranae@Ranae-laptop MINGW64 ~
+$ cd c/users/ranae/desktop/Data_course/data/data-shell/data/pdb
+bash: cd: c/users/ranae/desktop/Data_course/data/data-shell/data/pdb: No such file or directory
+
+Ranae@Ranae-laptop MINGW64 ~
+$ cd c:/users/ranae/desktop/Data_course/data/data-shell/data/pdb
+
+Ranae@Ranae-laptop MINGW64 /c/users/ranae/desktop/Data_course/data/data-shell/data/pdb (master)
+$ wc -l m*
+   49 maltose.pdb
+   35 menthol.pdb
+    9 methane.pdb
+   10 methanol.pdb
+   36 mint.pdb
+   44 morphine.pdb
+   41 mustard.pdb
+  224 total
+
+Ranae@Ranae-laptop MINGW64 /c/users/ranae/desktop/Data_course/data/data-shell/data/pdb (master)
+$ wc -l m* >> m_lines.txt
+
+Ranae@Ranae-laptop MINGW64 /c/users/ranae/desktop/Data_course/data/data-shell/data/pdb (master)
+$ cat m_lines.txt
+   49 maltose.pdb
+   35 menthol.pdb
+    9 methane.pdb
+   10 methanol.pdb
+   36 mint.pdb
+   44 morphine.pdb
+   41 mustard.pdb
+  224 total
+Ranae@Ranae-laptop MINGW64 /c/users/ranae/desktop/Data_course/data/data-shell/data/pdb (master)
+$ cp m_lines.txt ~/Desktop/Data_Course_Zauner
+
+Ranae@Ranae-laptop MINGW64 /c/users/ranae/desktop/Data_course/data/data-shell/data/pdb (master)
+$ cd ..
+
+Ranae@Ranae-laptop MINGW64 /c/users/ranae/desktop/Data_course/data/data-shell/data (master)
+$ sort -k2 -t , animals.txt | uniq -s11  >> ~/desktop/Data_Course_Zauner/unique_animals.txt
+
+Ranae@Ranae-laptop MINGW64 /c/users/ranae/desktop/Data_course/data/data-shell/data (master)
+$ cat ~/Desktop/data_course_zauner/unique_animals.txt
+2012-11-07,bear
+2012-11-05,deer
+2012-11-06,fox
+2012-11-05,rabbit
+2012-11-05,raccoon
+
+Ranae@Ranae-laptop MINGW64 /c/users/ranae/desktop/Data_course/data/data-shell/data (master)
+$ cd ..
+
+Ranae@Ranae-laptop MINGW64 /c/users/ranae/desktop/Data_course/data/data-shell (master)
+$ cd ..
+
+Ranae@Ranae-laptop MINGW64 /c/users/ranae/desktop/Data_course/data (master)
+$ head -1 BioLog_Plate_Data.csv
+Sample ID,Rep,Well,Dilution,Substrate,Hr_24,Hr_48,Hr_144
+
+Ranae@Ranae-laptop MINGW64 /c/users/ranae/desktop/Data_course/data (master)
+$ cut -d "," -f5 BioLog_Plate_Data.csv | sort | uniq
+2-Hydroxy Benzoic Acid
+4-Hydroxy Benzoic Acid
+D.L -a-Glycerol Phosphate
+D-Cellobiose
+D-Galactonic Acid ?-Lactone
+D-Galacturonic Acid
+D-Glucosaminic Acid
+D-Mallic Acid
+D-Mannitol
+D-Xylose
+Glucose-1-Phosphate
+Glycogen
+Glycyl-L-Glutamic Acid
+i-Erythitol
+Itaconic Acid
+L-Arginine
+L-Asparganine
+L-Phenylalanine
+L-Serine
+L-Threonine
+N-Acetyl-D-Glucosamine
+Phenylethylamine
+Putrescine
+Pyruvic Acid Methyl Ester
+Substrate
+Tween 40
+Tween 80
+Water
+a-Cyclodextrin
+a-D-Lactose
+a-Ketobutyric Acid
+ß-Methyl-D- Glucoside
+?-Hydroxybutyric Acid
+
+Ranae@Ranae-laptop MINGW64 /c/users/ranae/desktop/Data_course/data (master)
+$ cut -d "," -f5 BioLog_Plate_Data.csv | sort | uniq >> ../../data_course_zauner/unique_C-substrates.txt
+
+Ranae@Ranae-laptop MINGW64 /c/users/ranae/desktop/Data_course/data (master)
+$ cat ~/desktop/data_course_zauner/unique_C-substrates.txt
+2-Hydroxy Benzoic Acid
+4-Hydroxy Benzoic Acid
+D.L -a-Glycerol Phosphate
+D-Cellobiose
+D-Galactonic Acid ?-Lactone
+D-Galacturonic Acid
+D-Glucosaminic Acid
+D-Mallic Acid
+D-Mannitol
+D-Xylose
+Glucose-1-Phosphate
+Glycogen
+Glycyl-L-Glutamic Acid
+i-Erythitol
+Itaconic Acid
+L-Arginine
+L-Asparganine
+L-Phenylalanine
+L-Serine
+L-Threonine
+N-Acetyl-D-Glucosamine
+Phenylethylamine
+Putrescine
+Pyruvic Acid Methyl Ester
+Substrate
+Tween 40
+Tween 80
+Water
+a-Cyclodextrin
+a-D-Lactose
+a-Ketobutyric Acid
+ß-Methyl-D- Glucoside
+?-Hydroxybutyric Acid
+
+Ranae@Ranae-laptop MINGW64 /c/users/ranae/desktop/Data_course/data (master)
+$ pwd
+/c/users/ranae/desktop/Data_course/data
+
+Ranae@Ranae-laptop MINGW64 /c/users/ranae/desktop/Data_course/data (master)
+$ cd data-shell/data
+
+Ranae@Ranae-laptop MINGW64 /c/users/ranae/desktop/Data_course/data/data-shell/data (master)
+$ wc -l
+
+
+Ranae@Ranae-laptop MINGW64 /c/users/ranae/desktop/Data_course/data/data-shell/data (master)
+$ wc -l *.txt
+   20 amino-acids.txt
+    8 animals.txt
+   50 morse.txt
+  230 planets.txt
+    6 salmon.txt
+ 3080 sunspot.txt
+ 3394 total
+
+Ranae@Ranae-laptop MINGW64 /c/users/ranae/desktop/Data_course/data/data-shell/data (master)
+$ wc -l *.txt | sort
+    6 salmon.txt
+    8 animals.txt
+   20 amino-acids.txt
+   50 morse.txt
+  230 planets.txt
+ 3080 sunspot.txt
+ 3394 total
+
+Ranae@Ranae-laptop MINGW64 /c/users/ranae/desktop/Data_course/data/data-shell/data (master)
+$ wc -l *.txt | sort | tail
+    6 salmon.txt
+    8 animals.txt
+   20 amino-acids.txt
+   50 morse.txt
+  230 planets.txt
+ 3080 sunspot.txt
+ 3394 total
+
+Ranae@Ranae-laptop MINGW64 /c/users/ranae/desktop/Data_course/data/data-shell/data (master)
+$ wc -l *.txt | sort | tail -2
+ 3080 sunspot.txt
+ 3394 total
+
+Ranae@Ranae-laptop MINGW64 /c/users/ranae/desktop/Data_course/data/data-shell/data (master)
+$ wc -l *.txt | sort | tail -2 | head -1
+ 3080 sunspot.txt
+
+*******
+*******
+An alternative way: 
+
+Ranae@Ranae-laptop MINGW64 /c/users/ranae/desktop/Data_course/data/data-shell/data (master)
+$ wc -l *.txt | sort | grep -v total | tail -1
+ 3080 sunspot.txt
+
+*******
+*******
+
+Ranae@Ranae-laptop MINGW64 /c/users/ranae/desktop/Data_course/data/data-shell/many_files (master)
+$ cd ../many_files
+
+Ranae@Ranae-laptop MINGW64 /c/users/ranae/desktop/Data_course/data/data-shell/many_files (master)
+$ find . -name "*.txt" -exec /usr/bin/bash ~/Desktop/Data_course/data/data-shell/scripts/sum_lines.sh {} \; >> ~/desktop/data_course_zauner/file_sums.txt
+
+
