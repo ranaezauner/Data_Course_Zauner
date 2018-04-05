@@ -1,0 +1,21 @@
+R Markdown
+1. Save filename.rmd (type this out in name box). 
+
+2. Click Knit. 
+
+3. Add 
+```{r}
+
+```
+Example:
+```{r}
+setwd("c:/Users/Ranae/Desktop/Data_Course/code_examples/Vegan_Example")
+meta = read.delim("vegan_example_metadata.tsv",sep = "\t")
+otu = read.delim("vegan_example_otu_table.tsv",sep = "\t", row.names = 1)
+```
+Do this and comment throughout. 
+
+4. knit saves html file where the .rmd file was saved. 
+
+
+

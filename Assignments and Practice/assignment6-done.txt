@@ -1,0 +1,74 @@
+>>>>Task 1. (Bash)
+
+gunzip *.gz
+alias fqtofa='sed -n '\''1~4s/^@/>/p;2~4p'\'''
+for fn in *.fastq; do fqtofa $fn > $fn.fasta;done
+
+>>>>>Task 2. (Bash)
+
+grep -c "^>" *.fasta
+
+>>>>>Task 3. (R Studio)
+
+library(ShortRead)
+library(tidyr)
+library(stringr)
+library(msa)
+library(seqinr)
+library(dada2)
+setwd("c:/Users/Ranae/Desktop/Data_Course/assignments/Assignment_6/")
+fq.files = dir(path = getwd(), full.names = TRUE, pattern = ".fastq")
+
+filt.files = dir(path = getwd(), full.names = FALSE, pattern = ".fastq")
+
+dir.create(file.path(getwd(),"filtered"))
+
+for(i in filt.files){
+  fastqFilter(fn = i,fout = paste0(getwd(),"/filtered/",i,".filt"),
+              truncLen = 150)
+
+# Bash:
+mkdir fastas/
+mv *.fasta fastas/
+
+>>>>>Task 4.
+
+setwd(file.path(paste0(getwd(),"/filtered")))
+filtered = dir(path = getwd(), pattern = ".filt")
+
+dr = derepFastq(filtered)
+
+err = learnErrors(dr) 
+
+# can also plot errors
+plotErrors(err)
+
+clean = dada(dr,err) #uses all error info, etc to clean sequences
+
+
+
+>>>>>Task 5. 
+
+SeqTable = makeSequenceTable(clean)
+
+>>>>>>Task 6. 
+
+taxonomy = assignTaxonomy(SeqTable, refFasta = "../fastas/sh_general_release_dynamic_10.10.2017.fasta")
+
+>>>>>>> Task 7. 
+
+taxa.print <- taxonomy # Removing sequence rownames for display only
+rownames(taxa.print) <- NULL
+taxa.print
+
+which(names(as.data.frame(SeqTable)) %in% row.names(as.data.frame(taxonomy)))
+RSV = as.data.frame(SeqTable)
+
+taxa = as.data.frame(taxonomy)
+View(RSV)
+names(RSV) <- paste0(taxa$Family,"_",taxa$Genus)
+
+>>>>>> Task 8. 
+
+write.csv(RSV,file = "Table_w_taxonomy.csv")
+
