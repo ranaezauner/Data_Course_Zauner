@@ -1,0 +1,357 @@
+### Utah Lake Algal Communities
+##### Ranae Zauner, Spring 2018
+****
+The data for this project came from Rushforth Phycology. Samples were collected by the Utah Department of Water quality. It was given to me in excel files (one for each month), and look a significant amount of manipulation to prepare for analysis with the Vegan package. The code for this is happening in the background. 
+
+```{r include=FALSE}
+
+library(tidyr)
+library(dplyr)
+library(stringr)
+library(vegan)
+library(ggplot2)
+library(gganimate)
+
+#### Add all files 
+df1 = read.csv("c:/Users/Ranae/Desktop/Utah_Lake_Project/Original_as_CSV/August_21_2017.csv")
+df2 = read.csv("c:/Users/Ranae/Desktop/Utah_Lake_Project/Original_as_CSV/July_2017.csv")
+df3 = read.csv("c:/Users/Ranae/Desktop/Utah_Lake_Project/Original_as_CSV/June_2017.csv")
+df4 = read.csv("c:/Users/Ranae/Desktop/Utah_Lake_Project/Original_as_CSV/Lost_Samples_2017.csv")
+df5 = read.csv("c:/Users/Ranae/Desktop/Utah_Lake_Project/Original_as_CSV/May_13_2017.csv")
+df6 = read.csv("c:/Users/Ranae/Desktop/Utah_Lake_Project/Original_as_CSV/Nov_2017.csv")
+df7 = read.csv("c:/Users/Ranae/Desktop/Utah_Lake_Project/Original_as_CSV/Oct_2017.csv")
+
+#### Clean up data
+
+#Remove unnecessary lines:
+df1 = df1[-c(1:5,7),]
+df2 = df2[-c(1:5,7),]
+df3 = df3[-c(1:5,7),]
+df4 = df4[-c(1:5,7),]
+df5 = df5[-c(1:6,8),]
+df6 = df6[-c(1:5,7),]
+df7 = df7[-c(1:5,7),]
+
+#Reset row names:
+rownames(df1) <- seq(length=nrow(df1))
+rownames(df2) <- seq(length=nrow(df2))
+rownames(df3) <- seq(length=nrow(df3))
+rownames(df4) <- seq(length=nrow(df4))
+rownames(df5) <- seq(length=nrow(df5))
+rownames(df6) <- seq(length=nrow(df6))
+rownames(df7) <- seq(length=nrow(df7))
+
+#Update Column names
+names(df1) <- as.matrix(df1[1, ]) 
+df1 <- df1[-1, ] 
+df1[] <- lapply(df1, function(x) type.convert(as.character(x)))
+rownames(df1) <- seq(length=nrow(df1))
+
+
+names(df2) <- as.matrix(df2[1, ]) 
+df2 <- df2[-1, ] 
+df2[] <- lapply(df2, function(x) type.convert(as.character(x)))
+rownames(df2) <- seq(length=nrow(df2))
+
+
+names(df3) <- as.matrix(df3[1, ]) 
+df3 <- df3[-1, ] 
+df3[] <- lapply(df3, function(x) type.convert(as.character(x)))
+rownames(df3) <- seq(length=nrow(df3))
+
+
+names(df4) <- as.matrix(df4[1, ]) 
+df4 <- df4[-1, ] 
+df4[] <- lapply(df4, function(x) type.convert(as.character(x)))
+rownames(df4) <- seq(length=nrow(df4))
+
+
+names(df5) <- as.matrix(df5[1, ]) 
+df5 <- df5[-1, ] 
+df5[] <- lapply(df5, function(x) type.convert(as.character(x)))
+rownames(df5) <- seq(length=nrow(df5))
+
+
+names(df6) <- as.matrix(df6[1, ]) 
+df6 <- df6[-1, ] 
+df6[] <- lapply(df6, function(x) type.convert(as.character(x)))
+rownames(df6) <- seq(length=nrow(df6))
+
+
+names(df7) <- as.matrix(df7[1, ]) 
+df7 <- df7[-1, ] 
+df7[] <- lapply(df7, function(x) type.convert(as.character(x)))
+rownames(df7) <- seq(length=nrow(df7))
+
+#Confirm colnames area all the same
+colnames(df1)
+colnames(df2)
+colnames(df3)
+colnames(df4)
+colnames(df5)
+colnames(df6)
+colnames(df7)
+
+
+#Merge all into one data frame. 
+df_2017 <- rbind(df1,df2,df3,df4,df5,df6,df7)
+
+df = df_2017
+names(df) <- c("Project"             ,"RP.Lab.ID",           "Collector ID",        "Site.Name","Date",                "Sample\nType",       
+"Sample\nDepth" ,      "Taxon"    ,           "Algal Division"  ,    "% Relative\nDensity", "Cells/mL",            "µ³/mL" )
+#### This is still not ready to analyze, and needs some reformating, especially for Vegan. 
+# Because naming of these species is very haphazard, pull the first 2 words from each taxon name and call it that.
+
+#convert to character
+df$Taxon = as.character(df$Taxon)
+
+# assign each taxon to only the first 2 words of the taxonomy string.
+for(i in 1:length(df$Taxon)){
+  df$Taxon[i] = word(df$Taxon[i], end = 2)
+}
+
+# there are lots of duplicate entries. This consolidates them by RP.Lab.ID and Taxon
+
+df$`Cells/mL` = as.numeric(df$`Cells/mL`)
+
+dat = df %>% group_by(`RP.Lab.ID`,Taxon) %>%
+  summarise(value = sum(`Cells/mL`))
+
+
+# Main "spread" function
+dat = spread(dat, key = Taxon, value = "value")
+
+# change NA to 0
+dat[is.na(dat)] <- 0 
+
+# convert to data frame from table
+dat = as.data.frame(dat) 
+# make first column row names
+row.names(dat) <- dat$RP.Lab.ID 
+
+# remove this column now that it's stored as row names
+dat$RP.Lab.ID = NULL 
+
+# make metadata match
+names(df)
+
+# get unique id's from df metadata
+
+meta = (unique(df[,c("RP.Lab.ID","Site.Name","Date")]))
+names(df)
+
+
+full = cbind(meta,dat)
+row.names(full) = row.names(dat)
+
+
+#### Now! the object "full" is almost ready to work with! A couple more things.
+# Separate out meta data
+row.names(full) <- full$RP.Lab.ID
+meta = full[,1:3]
+df = full[,-c(1:3)]
+
+summary(df)
+
+# Site names are anything but consistent. Clean up of site names in excel.
+# write.csv(meta,"c:/Users/Ranae/Desktop/Utah_Lake_Project/meta-for-edits_markdown.csv")
+meta_edit = read.csv("c:/Users/Ranae/Desktop/Utah_Lake_Project/meta-for-edits.csv")
+
+levels(meta_edit$Site.Name) 
+```
+
+At this point, df and meta_edit are nearly ready for analysis. A couple more things need to be done. First:
+
+#### Convert date into date format readable by R
+```{r}
+# levels(meta_edit$Site.Name)
+# levels(meta_edit$Date)
+
+meta_edit$Date = as.character(meta_edit$Date)
+meta_edit$Date = as.Date(meta_edit$Date, format = "%m/%d/%Y")
+```
+Now! "df" and "meta_edit" are ready for Vegan!
+
+#### Lets see what Vegan can do with this data.
+
+First, let's create additional data frames with data presented in different ways for various analysis. 
+
+```{r}
+# glimpse(dat)
+# row.names(df)=df$`RP.Lab.ID`
+df$`RP.Lab.ID`=NULL
+
+df_pa = decostand(df, "pa") #for presence/absence
+df_rounded = as.data.frame(apply(df,2,round)) # Round counts to integers
+
+# remove bummer rows
+good_rows = row.names(df) %in% meta_edit$RP.Lab.ID
+
+df_pa = df_pa[good_rows,]
+```
+
+#### Look at Nonmetric Multidimensional Scaling.
+
+```{r}
+nmds = metaMDS(df_pa)
+
+mds1 = nmds$points[,1]
+mds2 = nmds$points[,2]
+
+NMDS = data.frame(mds1 = mds1, mds2 = mds2, site = meta_edit$Site.Name, Date = meta_edit$Date, Month = months(meta_edit$Date))
+
+plot(mds1,mds2)
+```
+
+      
+This isn't a terrible plot, but it could be better. 
+
+#### Make a pretty ggplot with NMDS: 
+```{r}
+plot1 = ggplot(NMDS, aes(x=mds1, y=mds2, color= site, frame = Month)) +
+  geom_point() +
+  labs(title = "NMDS showing algal composition among Utah Lake sites")
+  
+plot1
+```
+
+        
+Lets visualize this month by month with gganimate. To do this, we have to add a month column with proper levels so that plots will be displayed chronologically rather than alphabetically by month. 
+
+#### Add column of month with proper levels so display will be in order of month (not alphabetical).
+```{r}
+meta_edit$month = months(meta_edit$Date)
+
+meta_edit$month = factor(meta_edit$month)
+levels(meta_edit$month) = c("January", "February", "March", "April","May","June","July", "August")
+
+setwd("c:/Users/Ranae/Desktop/Utah_Lake_Project/")
+gga_plot1 = gganimate(plot1, interval = 2.5, "gga_plot1.gif")
+
+```
+![](c:/Users/Ranae/Desktop/Utah_Lake_Project/gga_plot1.gif)
+
+#### What about a simple look at diversity of each sample over time? 
+```{r message=FALSE, warning=FALSE}
+df = df[good_rows,]
+
+
+plot2 = ggplot(mapping = aes(x=meta_edit$RP.Lab.ID, y=diversity(df), color=meta_edit$Site.Name, frame = (meta_edit$month), cumulative = TRUE )) +
+  geom_boxplot() +
+  labs(y = "Diversity", x = "Sample", title = "Algal Diversity at Utah Lake Sites")
+
+
+gga_plot2 = gganimate(plot2, interval = 2.5, "gga_plot2.gif")
+```
+![](c:/Users/Ranae/Desktop/Utah_Lake_Project/gga_plot2.gif)
+
+Not bad, but a better way to look at this might be a Shannon Index to characterize species diversity (accounts for species abundance and evenness).
+
+#### Shannon Index
+```{r message=FALSE, warning=FALSE}
+specnumber(df, groups = meta_edit$Site.Name)
+div1 = diversity(df, index = "shannon")
+meta_edit$Shannon = diversity(df, index = "shannon")
+
+plot3 = ggplot(df, aes(y = meta_edit$Site.Name, x=div1, frame = (meta_edit$month))) +
+  geom_point() +
+  theme_bw() +
+  labs(y = "Site", x = "Shannon Index", title = "Shannon Index for Utah Lake Sites")
+
+gga_plot3 = gganimate(plot3, interval = 2.5, "gga_plot3.gif")
+```
+![](c:/Users/Ranae/Desktop/Utah_Lake_Project/gga_plot3.gif)
+
+#### Lets look at Ordination:
+```{r message=FALSE, warning=FALSE}
+ordiplot(nmds, type = "n") # Sets up the plotting area
+orditorp(nmds,display="sites",col="red",air=0.01) # Adds the samples in ordination space
+ordiellipse(nmds, groups = meta_edit$Site.Name, label = TRUE) # Calculates the centroid and 95% C.I. of each treatment group
+```
+
+Whoa! We can do better. 
+
+#### Ordination in ggplot
+```{r message=FALSE, warning=FALSE}
+ggplot(NMDS, aes(x=mds1,y=mds2,color=site)) +
+  geom_point(aes(shape=site) ) +
+  stat_ellipse()
+```
+No real visisble differences in the sites, what does ANOVA say? 
+
+#### Adonis (Permutational Multivariate Analysis of Variance Using Distance Matrices)
+```{r}
+adonis(df_pa ~ meta_edit$Site.Name)
+```
+
+Adonis stays this is important, but can you trust it? The ordination chart suggests this is more about due to a lack of data points.  
+
+#### Species Accumulation curve
+
+```{r}
+spe <- specaccum(df)
+plot(spe)
+```
+#### Fisher Alpha value
+```{r}
+meta_edit$Fisher = fisher.alpha(df_pa)
+```
+
+If would be interesting to map these sites for one more analysis.
+
+#### GPS points were not provided based on this dataset, so grab from google.
+```{r message=FALSE, warning=FALSE}
+library(ggmap)
+library(leaflet)
+library(sp)
+library(magrittr)
+library(shiny)
+
+#Add GPS points to meta_edit
+meta_edit$lat = plyr::mapvalues(meta_edit$Site.Name, from = levels(meta_edit$Site.Name), to = c("40.325437","40.322984","40.320503","40.255507","40.007928","40.141172",
+                                                                                                "40.327676","40.267794","40.206524","40.198590","40.168882","40.166738","40.237354"))
+meta_edit$lon = plyr::mapvalues(meta_edit$Site.Name, from = levels(meta_edit$Site.Name), to = c("-111.770932","-111.774439","-111.777657","-111.855231","-111.912158","-111.801620",
+                                                                                                "-111.765439","-111.848799","-111.7302345","-111.665206","-111.745437","-111.748290","-111.741528"))
+
+
+meta_edit$lat = as.numeric(as.character(meta_edit$lat))
+meta_edit$lon = as.numeric(as.character(meta_edit$lon))
+```
+
+#### Make a map!
+```{r message=FALSE, warning=FALSE}
+map <- leaflet(meta_edit) %>%
+  addCircles(lng = meta_edit$lon, lat = meta_edit$lat)%>%
+  addTiles() %>%
+  addMarkers(lng=-111.765439,lat=40.327676, popup = "Lindon Marina")%>%
+  addMarkers(lng=-111.848799,lat=40.267794, popup = "Pelican Point")
+
+map
+```
+Not bad! How about a map with more information?
+```{r message=FALSE, warning=FALSE}
+qpal <- colorQuantile("YlGnBu", meta_edit$Shannon, n = 4)
+
+#Change Sig Figs of Shannon for popups:
+meta_edit$Shannon_Sig = signif(meta_edit$Shannon,4)
+
+map1 <- leaflet(meta_edit) %>%
+  addTiles(group = "Topo")%>%
+  addProviderTiles("Esri.WorldTopoMap", group = "Topo")%>%
+  addCircleMarkers(lng = meta_edit$lon, lat = meta_edit$lat, popup = paste("Site: ", meta_edit$Site.Name, "<br>", "Shannon Index: ", 
+                                                                           meta_edit$Shannon_Sig),
+                   weight = 1, radius = 12, color = ~qpal(meta_edit$Shannon), stroke = FALSE, fillOpacity = 0.5, group = "circles") %>%
+  addLegend(pal = qpal, values = ~Shannon, group = "circles", position = "bottomright", title = "Shannon Index")%>%
+  addMiniMap(position = "topright")%>%
+  addScaleBar(position = "topleft")
+
+map1
+```
+While leaflet seems pretty wide spread, it wasn't very well documented. Here's a few things I learned the hard way:
+*In order to use another map, it has to be assigned to a group.
+  + See: addProviderTiles("Esri.WorldTopoMap", group = "Topo")
+* Colors had to be assigned to palets, that could then be called in leaflet
+  + qpal <- colorQuantile("YlGnBu", meta_edit$Shannon, n = 4)
+
+
+Colors had to be preassigned to palets before 
